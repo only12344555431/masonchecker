@@ -947,43 +947,45 @@ def index():
                     let data = result;
                     let tableHtml = '<table><tr>';
                     
-                    // JSON dizisi veya nesne kontrolü
+                    // API'den gelen ham veriyi JSON olarak parse et
                     if (typeof result === 'string') {
                         try {
                             data = JSON.parse(result);
                         } catch (e) {
-                            // Eğer JSON değilse, tek bir satırlık tablo oluştur
+                            // JSON değilse, ham metni tabloya ekle
                             document.getElementById('result').innerHTML = '<table><tr><td>' + result + '</td></tr></table>';
                             return;
                         }
                     }
 
-                    // İlk satırın anahtarlarını başlık olarak al
-                    let headers = [];
+                    // Veriyi tabloya dönüştür
                     if (Array.isArray(data) && data.length > 0) {
-                        headers = Object.keys(data[0]);
+                        // Dizi ise, ilk elemanın anahtarlarını başlık yap
+                        const headers = Object.keys(data[0]);
+                        tableHtml += headers.map(header => '<th>' + header + '</th>').join('');
+                        tableHtml += '</tr>';
+
+                        data.forEach(row => {
+                            tableHtml += '<tr>';
+                            headers.forEach(header => {
+                                tableHtml += '<td>' + (row[header] || '') + '</td>';
+                            });
+                            tableHtml += '</tr>';
+                        });
                     } else if (typeof data === 'object' && data !== null) {
-                        headers = Object.keys(data);
-                        data = [data]; // Tek nesneyi diziye çevir
-                    } else {
-                        document.getElementById('result').innerHTML = '<table><tr><td>Geçersiz veri formatı</td></tr></table>';
-                        return;
-                    }
-
-                    // Başlıkları ekle
-                    headers.forEach(header => {
-                        tableHtml += '<th>' + header.toUpperCase() + '</th>';
-                    });
-                    tableHtml += '</tr>';
-
-                    // Verileri ekle
-                    data.forEach(row => {
-                        tableHtml += '<tr>';
+                        // Tek bir nesne ise, anahtarlarını başlık yap
+                        const headers = Object.keys(data);
+                        tableHtml += headers.map(header => '<th>' + header + '</th>').join('');
+                        tableHtml += '</tr><tr>';
                         headers.forEach(header => {
-                            tableHtml += '<td>' + (row[header] || '') + '</td>';
+                            tableHtml += '<td>' + (data[header] || '') + '</td>';
                         });
                         tableHtml += '</tr>';
-                    });
+                    } else {
+                        // Ne dizi ne de nesne ise, ham veriyi tabloya ekle
+                        document.getElementById('result').innerHTML = '<table><tr><td>' + result + '</td></tr></table>';
+                        return;
+                    }
 
                     tableHtml += '</table>';
                     document.getElementById('result').innerHTML = tableHtml;
