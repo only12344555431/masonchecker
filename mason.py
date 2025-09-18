@@ -767,7 +767,7 @@ def index():
                 
                 <div class="welcome-banner">
                     <h2>C7KA Paneline Hoşgeldiniz</h2>
-                    <p>Sorgularınızı güvenli şekilde yapabilirsiniz</p>
+                    <p>Sorgularınızı güvenli şekilde yapabilirsiniz developed by cappy </> ;)</p>
                 </div>
                 
                 <div class="search-area">
