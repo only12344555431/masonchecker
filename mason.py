@@ -766,8 +766,8 @@ def index():
                 </div>
                 
                 <div class="welcome-banner">
-                    <h2>C7KA Paneline Hoşgeldiniz developed by cappy </> ;</h2>
-                    <p>Sorgularınızı güvenli şekilde yapabilirsiniz )</p>
+                    <h2>C7KA Paneline Hoşgeldiniz Developed by cappy </></h2>
+                    <p>Sorgularınızı güvenli şekilde yapabilirsiniz</p>
                 </div>
                 
                 <div class="search-area">
@@ -913,7 +913,7 @@ def index():
                 }
                 
                 document.getElementById('loading').style.display = 'block';
-                document.getElementById('result').innerHTML = '';
+                document.getElementById('result').textContent = '';
                 
                 fetch('/query', {
                     method: 'POST',
@@ -930,67 +930,45 @@ def index():
                 .then(data => {
                     document.getElementById('loading').style.display = 'none';
                     if (data.error) {
-                        document.getElementById('result').innerHTML = '<table><tr><td>Hata: ' + data.error + '</td></tr></table>';
+                        document.getElementById('result').textContent = 'Hata: ' + data.error;
                     } else {
                         displayResults(data.result);
                     }
                 })
                 .catch(error => {
                     document.getElementById('loading').style.display = 'none';
-                    document.getElementById('result').innerHTML = '<table><tr><td>Hata: ' + error.message + '</td></tr></table>';
+                    document.getElementById('result').textContent = 'Hata: ' + error.message;
                     console.error('Hata:', error);
                 });
             }
             
             function displayResults(result) {
                 try {
-                    let data = result;
-                    let tableHtml = '<table><tr>';
+                    const data = JSON.parse(result);
                     
-                    // API'den gelen ham veriyi JSON olarak parse et
-                    if (typeof result === 'string') {
-                        try {
-                            data = JSON.parse(result);
-                        } catch (e) {
-                            // JSON değilse, ham metni tabloya ekle
-                            document.getElementById('result').innerHTML = '<table><tr><td>' + result + '</td></tr></table>';
-                            return;
-                        }
-                    }
-
-                    // Veriyi tabloya dönüştür
                     if (Array.isArray(data) && data.length > 0) {
-                        // Dizi ise, ilk elemanın anahtarlarını başlık yap
-                        const headers = Object.keys(data[0]);
-                        tableHtml += headers.map(header => '<th>' + header + '</th>').join('');
+                        let tableHtml = '<table>';
+                        tableHtml += '<tr>';
+                        for (let key in data[0]) {
+                            tableHtml += '<th>' + key.toUpperCase() + '</th>';
+                        }
                         tableHtml += '</tr>';
-
+                        
                         data.forEach(row => {
                             tableHtml += '<tr>';
-                            headers.forEach(header => {
-                                tableHtml += '<td>' + (row[header] || '') + '</td>';
-                            });
+                            for (let key in row) {
+                                tableHtml += '<td>' + (row[key] || '') + '</td>';
+                            }
                             tableHtml += '</tr>';
                         });
-                    } else if (typeof data === 'object' && data !== null) {
-                        // Tek bir nesne ise, anahtarlarını başlık yap
-                        const headers = Object.keys(data);
-                        tableHtml += headers.map(header => '<th>' + header + '</th>').join('');
-                        tableHtml += '</tr><tr>';
-                        headers.forEach(header => {
-                            tableHtml += '<td>' + (data[header] || '') + '</td>';
-                        });
-                        tableHtml += '</tr>';
+                        
+                        tableHtml += '</table>';
+                        document.getElementById('result').innerHTML = tableHtml;
                     } else {
-                        // Ne dizi ne de nesne ise, ham veriyi tabloya ekle
-                        document.getElementById('result').innerHTML = '<table><tr><td>' + result + '</td></tr></table>';
-                        return;
+                        document.getElementById('result').textContent = result;
                     }
-
-                    tableHtml += '</table>';
-                    document.getElementById('result').innerHTML = tableHtml;
                 } catch (e) {
-                    document.getElementById('result').innerHTML = '<table><tr><td>Hata: ' + e.message + '</td></tr></table>';
+                    document.getElementById('result').textContent = result;
                 }
             }
             
