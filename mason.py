@@ -671,7 +671,7 @@ def index():
                     <a href="{{ url_for('logout') }}" class="nav-link"><i class="fas fa-sign-out-alt"></i>Çıkış Yap</a>
                 </div>
                 
-                <div class="logo">C7KA SORGULARI</div>
+                <div class="logo">C7KA check</div>
                 
                 <div class="nav-links">
                     <a href="{{ url_for('index') }}" class="nav-link"><i class="fas fa-home"></i>Ana Sayfa</a>
